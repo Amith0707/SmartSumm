@@ -1,4 +1,11 @@
 .vscode
+smart_summ_env/
+logs/
+note.txt
+__pycache__/
+*.pyc
+*.py[cod]
+*.pyo
+struct.text
+artifacts/
 .env
-smart_summ_env
-logs

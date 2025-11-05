@@ -2,7 +2,7 @@ import logging
 import os
 from datetime import datetime
 
-def setup_logger(name:str="SmartSumm"):
+def setup_logger(name:str="SmartSumm"): # name is for making sure which file log is made
     """
     This file is used to create logs. Anytime you run the program a log file 
     is generated inside logs/ based on date and time the log file name is created.
@@ -12,7 +12,7 @@ def setup_logger(name:str="SmartSumm"):
     os.makedirs(log_dir,exist_ok=True)
 
     timestamp=datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_filename=os.path.join(log_dir,f"{timestamp}.log")
+    log_filename=os.path.join(log_dir,f"{name}_{timestamp}.log")
 
     #Log format
     log_format="%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s"
@@ -31,5 +31,6 @@ def setup_logger(name:str="SmartSumm"):
 
     return logger
 
-if __name__=="__main__":
-    setup_logger("Trial")
+# Logger is working well
+# if __name__=="__main__":
+#     setup_logger("Trial")
