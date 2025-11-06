@@ -9,3 +9,4 @@ __pycache__/
 struct.text
 artifacts/
 .env
+results/
