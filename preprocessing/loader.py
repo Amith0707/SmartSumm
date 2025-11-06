@@ -5,6 +5,10 @@ from transformers import DataCollatorForSeq2Seq #->for smart padidng
 from utils.constant import TOKENIZER,MODEL,MODEL_NAME
 from datasets import Dataset,load_from_disk
 
+###################################################
+# Experiment part
+from torch.utils.data import Subset
+
 
 from logger import setup_logger
 logger=setup_logger()
@@ -27,45 +31,40 @@ def data_loader(dataset:Dataset,collator:DataCollatorForSeq2Seq=data_collator,ta
     print("="*100)
     logger.info(f"[INFO]- Converting {task} dataset into DataLoader..")
 
-    if task=="train":
-        train_dataloader=DataLoader(
-            collate_fn=collator,
-            shuffle=True,
-            batch_size=8,
-            dataset=dataset 
-        )
-        logger.info(f"[INFO]- Converting {task} dataset into DataLoader suceessful..")
-        return train_dataloader
-    elif task=="validation":
-        validation_dataloader=DataLoader(
-            collate_fn=collator,
-            batch_size=8,
-            dataset=dataset,
-            shuffle=False
-        )
-        logger.info(f"[INFO]- Converting {task} dataset into DataLoader suceessful..") 
-        return validation_dataloader
-    else:
-        test_dataloader=DataLoader(
-            collate_fn=collator,
-            batch_size=8,
-            dataset=dataset,
-            shuffle=False
-        )
-        logger.info(f"[INFO]- Converting {task} dataset into DataLoader suceessful..") 
-        return test_dataloader
+    #simplifying it for working on model_training.py
+    loader=DataLoader(
+        collate_fn=collator,
+        shuffle=(task=="train"), # shuffle only when it's train dataset
+        dataset=dataset,
+        batch_size=8
+    )
+    return loader
         
     
-# Extracting the dataset(tyokenized)
-tokenized_data_path="artifacts/tokenized_data"
-
-train_dataset=load_from_disk(os.path.join(tokenized_data_path,"train"))
-validation_dataset=load_from_disk(os.path.join(tokenized_data_path,"validation"))
-test_dataset=load_from_disk(os.path.join(tokenized_data_path,"test"))
 
 #Creating DataLoaders
-train_loader=data_loader(dataset=train_dataset,collator=data_collator,task="train")
-validation_loader=data_loader(dataset=validation_dataset,collator=data_collator,task="validation")
-test_loader=data_loader(dataset=test_dataset,collator=data_collator,task="test")
+def get_dataloaders(tokenized_data_path:str="artifacts/tokenized_data",collator:DataCollatorForSeq2Seq=data_collator,task:str="train"):
+    """
+    Code for fetching DataLoader and transferring to model training
+    """
+    print("="*100)
+    logger.info(f"[INFO]-Loading {task} Tokenized Datasets..")
+    train_dataset=load_from_disk(os.path.join(tokenized_data_path,"train"))
+    # small_train_dataset=Subset(train_dataset,range(16))
+    validation_dataset=load_from_disk(os.path.join(tokenized_data_path,"validation"))
+    # small_validation_dataset=Subset(validation_dataset,range(16))
+    test_dataset=load_from_disk(os.path.join(tokenized_data_path,"test"))
+    # small_test_dataset=Subset(test_dataset,range(16))
 
-logger.info("[INFO]- All dataloaders created successfully!")
+    logger.info(f"[INFO]-Creating DataLoaders..")
+
+    train_loader=data_loader(dataset=train_dataset,collator=data_collator,task="train")
+    validation_loader=data_loader(dataset=validation_dataset,collator=data_collator,task="validation")
+    test_loader=data_loader(dataset=test_dataset,collator=data_collator,task="test")
+    logger.info("[INFO]- All dataloaders created successfully!")
+
+    return train_loader,validation_loader,test_loader
+
+
+# if __name__ == "__main__":
+#     train_loader, val_loader, test_loader = get_dataloaders()

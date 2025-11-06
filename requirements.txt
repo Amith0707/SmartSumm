@@ -60,3 +60,5 @@ xxhash==3.6.0
 yarl==1.22.0
 hf-xet==1.2.0
 dotenv==0.9.9
+rouge_score==0.1.2
+bleu==0.3
