@@ -50,11 +50,11 @@ def get_dataloaders(tokenized_data_path:str="artifacts/tokenized_data",collator:
     print("="*100)
     logger.info(f"[INFO]-Loading {task} Tokenized Datasets..")
     train_dataset=load_from_disk(os.path.join(tokenized_data_path,"train"))
-    small_train_dataset=Subset(train_dataset,range(16))
+    small_train_dataset=Subset(train_dataset,range(8))
     validation_dataset=load_from_disk(os.path.join(tokenized_data_path,"validation"))
-    small_validation_dataset=Subset(validation_dataset,range(16))
+    small_validation_dataset=Subset(validation_dataset,range(8))
     test_dataset=load_from_disk(os.path.join(tokenized_data_path,"test"))
-    small_test_dataset=Subset(test_dataset,range(16))
+    small_test_dataset=Subset(test_dataset,range(8))
 
     logger.info(f"[INFO]-Creating DataLoaders..")
 
