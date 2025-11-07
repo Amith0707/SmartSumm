@@ -1,13 +1,15 @@
 import os
 import torch
 import evaluate
-from torch.optim import AdamW
-from torch.utils.data import Subset
-from tqdm import tqdm
+import shutil
+import tempfile
+import json
 import matplotlib.pyplot as plt
+from torch.optim import AdamW
+from tqdm import tqdm
 from peft import LoraConfig,get_peft_model
 from logger import setup_logger
-from utils.constant import MODEL,MODEL_NAME,TOKENIZER
+from utils.constant import MODEL,TOKENIZER,ZIP
 from preprocessing.loader import get_dataloaders
 from timeit import default_timer as timer
 
@@ -107,20 +109,47 @@ def train_model(optimizer:torch.optim=optimizer,num_epochs:int=4,loader:torch.ut
 
     return model
 
-def save_trained_model(model,tokenizer,save_dir=MODEL_SAVE_DIR):
+def save_trained_model(model, tokenizer, save_dir=MODEL_SAVE_DIR, zip_file: bool = ZIP):
     """
-    Save fine-tuned model in zipped format under results/model/
+    Save the fine-tuned model and tokenizer in zipped format under results/model/
+    The final structure will contain ONLY the .zip file, not individual model files.
     """
+    os.makedirs(save_dir, exist_ok=True)
+
+    # Always save model + tokenizer first
     model.save_pretrained(save_dir)
     tokenizer.save_pretrained(save_dir)
+    logger.info(f"[INFO]-Model and tokenizer saved to {save_dir}")
 
-    # Zipping it
-    zip_path=os.path.join(save_dir,"smart_summ_model_fused.zip")
-    os.system(f"cd {save_dir} && zip -r smart_summ_model_fused.zip")
-    logger.info(f"[INFO]-Model saved and zipped at :{zip_path}")
+    # Only zip if user enabled it via utils.constant.ZIP or argument
+    if zip_file:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            logger.info(f"[INFO]-Model is being saved as zip file in {save_dir} this would take some minutes kindly wait.. :)")
 
-    return zip_path
+            # Zipping it
+            zip_path = os.path.join(save_dir, "smart_summ_model_fused.zip")
+            if os.path.exists(zip_path):
+                os.remove(zip_path)
+            try:
+                shutil.make_archive(
+                    base_name=zip_path.replace(".zip", ""),
+                    format="zip",
+                    root_dir=save_dir,
+                )
+                logger.info(f"[INFO]-Model saved and zipped at :{zip_path}")
+            except KeyboardInterrupt:  # For testing purpose
+                logger.warning("[WARNING] - Zipping interrupted by user. Cleaning up...")
+                if os.path.exists(zip_path):
+                    os.remove(zip_path)
+                    os.remove(save_dir)
+                raise
+        logger.info(f"[INFO]-Temporary model files cleaned up. Final zip stored at {zip_path}")
+        return zip_path
 
+    else:
+        logger.info(f"[INFO]-Skipping zip creation (ZIP flag is False). Model saved normally at {save_dir}")
+        return save_dir
+    
 def evaluate_dataset(model,loader,tokenizer,split_name="validation"):
     """
     Evaluating the fine tuned model on train,test as well as validation dataset
@@ -162,16 +191,14 @@ def evaluate_dataset(model,loader,tokenizer,split_name="validation"):
         logger.info(f"{key}:    {value:.4f}")
 
     # saving the metrics
-    save_path = os.path.join("results", "stats", f"{split_name}_rouge_scores.txt")
+    save_path = os.path.join("results", "stats", f"{split_name}_rouge_scores.json")
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path,"w") as f:
-        for key,value in rouge_scores.items():
-            f.write(f"{key}:    {value:.4f}\n")
+        json.dump(rouge_scores,f,indent=4)
 
     logger.info(f"[INFO]-ROUGE Metrics saved to {save_path}")
 
     return rouge_scores
-    
 
 # Fetching the data loader
 train_loader, val_loader, test_loader = get_dataloaders()
@@ -180,8 +207,6 @@ train_loader, val_loader, test_loader = get_dataloaders()
 print("="*100)
 print(f"STARTING MODEL TRAINING..")
 train_model(optimizer=optimizer,loader=train_loader,num_epochs=1)
-
-from utils.constant import TOKENIZER
 
 # After training:
 logger.info(f"[INFO]- Evaluating model performance with ROUGE...")

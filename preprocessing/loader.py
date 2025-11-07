@@ -50,17 +50,17 @@ def get_dataloaders(tokenized_data_path:str="artifacts/tokenized_data",collator:
     print("="*100)
     logger.info(f"[INFO]-Loading {task} Tokenized Datasets..")
     train_dataset=load_from_disk(os.path.join(tokenized_data_path,"train"))
-    # small_train_dataset=Subset(train_dataset,range(16))
+    small_train_dataset=Subset(train_dataset,range(16))
     validation_dataset=load_from_disk(os.path.join(tokenized_data_path,"validation"))
-    # small_validation_dataset=Subset(validation_dataset,range(16))
+    small_validation_dataset=Subset(validation_dataset,range(16))
     test_dataset=load_from_disk(os.path.join(tokenized_data_path,"test"))
-    # small_test_dataset=Subset(test_dataset,range(16))
+    small_test_dataset=Subset(test_dataset,range(16))
 
     logger.info(f"[INFO]-Creating DataLoaders..")
 
-    train_loader=data_loader(dataset=train_dataset,collator=data_collator,task="train")
-    validation_loader=data_loader(dataset=validation_dataset,collator=data_collator,task="validation")
-    test_loader=data_loader(dataset=test_dataset,collator=data_collator,task="test")
+    train_loader=data_loader(dataset=small_train_dataset,collator=data_collator,task="train")
+    validation_loader=data_loader(dataset=small_validation_dataset,collator=data_collator,task="validation")
+    test_loader=data_loader(dataset=small_test_dataset,collator=data_collator,task="test")
     logger.info("[INFO]- All dataloaders created successfully!")
 
     return train_loader,validation_loader,test_loader
