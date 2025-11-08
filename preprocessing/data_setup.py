@@ -6,7 +6,7 @@ from datasets import load_dataset
 # from dotenv import load_dotenv
 logger=setup_logger("data_model_setup")
 
-def download_dataset(dataset_name:str="cnn_dailymail",version="3.0.0",save_dir="artifact"):
+def download_dataset(dataset_name:str="cnn_dailymail",version="3.0.0",save_dir="artifacts"):
     """
     Task of this function is to download the Dataset and store it in artifacts for future reference"""
     print(f"Download_dataset intialized...")
@@ -35,6 +35,7 @@ def download_model(model_name:str="google/flan-t5-small",save_dir="artifacts/mod
     logger.info(f"Downloading the model and Tokenizer:  {model_name}")
     os.makedirs(save_dir,exist_ok=True)
 
+    # Passing these two variables globally
     tokenizer=AutoTokenizer.from_pretrained(model_name)
     model=AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
@@ -45,19 +46,7 @@ def download_model(model_name:str="google/flan-t5-small",save_dir="artifacts/mod
     logger.info(f"[INFO] Model and tokenizer saved to: {save_dir}")
 
     return tokenizer,model
-if __name__=="__main__":
-    # try:
-        # from huggingface_hub import login
-        # hf_token=os.getenv("HF_WRITE")
-        # login(token=hf_token)
-        # print("Login Sucessful")
-    # except Exception as e:
-        # print("Login Failed...",e)
-    
-    print("Started Process...")
-    dataset=download_dataset()
-    tokenizer,model=download_model()
-    print("data_setup.py workinh....")
+
 
     
 
