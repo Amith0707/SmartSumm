@@ -62,3 +62,5 @@ hf-xet==1.2.0
 dotenv==0.9.9
 rouge_score==0.1.2
 bleu==0.3
+optimum==2.0.0
+gradio==5.49.1
