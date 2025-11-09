@@ -36,17 +36,6 @@ def  get_dataloaders(tokenized_data_path:str="artifacts/tokenized_data",collator
     logger.info(f"[INFO]-Loading {task} Tokenized Datasets..")
     # train dataset
     train_dataset=load_from_disk(os.path.join(tokenized_data_path,"train"))
-<<<<<<< HEAD
-    train_dataset=Subset(train_dataset,range(8)) # --Uncomment
-
-    # validation dataset
-    validation_dataset=load_from_disk(os.path.join(tokenized_data_path,"validation"))
-    validation_dataset=Subset(validation_dataset,range(8)) # --Uncomment
-
-    # test dataset
-    test_dataset=load_from_disk(os.path.join(tokenized_data_path,"test"))
-    test_dataset=Subset(test_dataset,range(8))    # --Uncomment
-=======
     # train_dataset=Subset(train_dataset,range(8)) # --Uncomment
 
     # validation dataset
@@ -56,7 +45,6 @@ def  get_dataloaders(tokenized_data_path:str="artifacts/tokenized_data",collator
     # test dataset
     test_dataset=load_from_disk(os.path.join(tokenized_data_path,"test"))
     # test_dataset=Subset(test_dataset,range(8))    # --Uncomment
->>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9
 
     logger.info(f"[INFO]-Creating DataLoaders..")
 
