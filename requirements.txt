@@ -62,5 +62,9 @@ hf-xet==1.2.0
 dotenv==0.9.9
 rouge_score==0.1.2
 bleu==0.3
+<<<<<<< HEAD
 optimum==2.0.0
 gradio==5.49.1
+=======
+optimum==2.0.0
+>>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9

@@ -4,12 +4,19 @@ import shutil
 import onnx
 import logging
 from pathlib import Path
+<<<<<<< HEAD
 from transformers import DataCollatorForSeq2Seq
+=======
+>>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9
 from tqdm import tqdm
 from logger import setup_logger
 from onnxruntime.quantization import quantize_dynamic, QuantType
 from optimum.onnxruntime import ORTModelForSeq2SeqLM
+<<<<<<< HEAD
 from transformers import AutoTokenizer,AutoModelForSeq2SeqLM
+=======
+from transformers import AutoTokenizer
+>>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9
 from preprocessing.loader import get_dataloaders
 import evaluate
 import torch
@@ -38,10 +45,17 @@ os.makedirs(QUANTIZED_DIR, exist_ok=True)
 # Step 1: Quantize ONNX Models
 def quantize_onnx_model(model_name: str, quant_type=QuantType.QInt8):
     """
+<<<<<<< HEAD
     Quantizes an ONNX model file and saves it with the same base filename.
     """
     model_path = ONNX_DIR / model_name
     output_path = QUANTIZED_DIR / model_name  # ✅ keep same name, no "_quantized"
+=======
+    Quantizes an ONNX model file and saves the quantized version.
+    """
+    model_path = ONNX_DIR / model_name
+    output_path = QUANTIZED_DIR / model_name.replace(".onnx", "_quantized.onnx")
+>>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9
 
     if not model_path.exists():
         logger.warning(f"[WARN] - Model file not found: {model_path}")
@@ -63,7 +77,10 @@ def quantize_onnx_model(model_name: str, quant_type=QuantType.QInt8):
     logger.info(f"[INFO] - Size reduced: {orig_size:.2f}MB → {quant_size:.2f}MB ({compression_ratio:.1f}% smaller)")
     return output_path
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9
 # Step 2: Copy Tokenizer and Config Files
 def copy_tokenizer_and_configs():
     """
@@ -163,6 +180,7 @@ def run_quantization(tokenizer,val_loader):
     logger.info("[COMPLETE] - Quantization pipeline completed successfully.")
     logger.info("=" * 100)
 
+<<<<<<< HEAD
 
 # if __name__ == "__main__":
 #     # Only for standalone run
@@ -170,3 +188,5 @@ def run_quantization(tokenizer,val_loader):
 #     data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=None, padding="longest", return_tensors="pt")
 #     _, validation_loader, _ = get_dataloaders(collator=data_collator)
 #     run_quantization(tokenizer=tokenizer, val_loader=validation_loader)
+=======
+>>>>>>> 6c4b92cf1dd8322eb950e624c40fcef05af408a9
